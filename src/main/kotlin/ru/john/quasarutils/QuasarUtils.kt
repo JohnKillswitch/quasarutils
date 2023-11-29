@@ -4,13 +4,18 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
+import ru.john.quasarutils.commands.InfectCommands
+import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
 import ru.john.quasarutils.configs.Messages
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.MainBase
+import ru.john.quasarutils.events.DisableRecipes
 import ru.john.quasarutils.events.JoinAndLeaveHandler
 import ru.john.quasarutils.events.MoveOnPaths
+import ru.john.quasarutils.events.OpenStations
+import ru.john.quasarutils.events.virus.ApplyStages
 import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
 import space.arim.dazzleconf.ConfigurationOptions
@@ -41,7 +46,8 @@ class QuasarUtils : JavaPlugin() {
 
         val hikariDataSource = DataSource(this).create()
         val mainBase = MainBase(hikariDataSource)
-        mainBase.createTables()
+        mainBase.createVirusTable()
+        mainBase.createCharacterTable()
         val cacheMap = CacheMap(mainBase)
         val placeholderExpansion = PlaceholderExpansion(cacheMap)
 
@@ -49,18 +55,32 @@ class QuasarUtils : JavaPlugin() {
             PlaceholderExpansion(cacheMap).register()
         }
 
+
         val cHelper = ChatHelper(miniMessage)
 
         getCommand("char")!!.setExecutor(
-            SetCharacterInfo(miniMessage, mainBase, cHelper, cacheMap, messages)
+            SetCharacterInfo(this, miniMessage, mainBase, cHelper, cacheMap, messages)
         )
-        server.pluginManager.registerEvents(JoinAndLeaveHandler(cacheMap, mainBase), this)
 
-        registerSchedulers(config, this)
+        getCommand("quasarutils")!!.setExecutor(
+            MainCommand(this, placeholderExpansion, cacheMap)
+        )
+        getCommand("infect")!!.setExecutor(
+            InfectCommands(this, cacheMap)
+        )
+
+        val disableRecipes = DisableRecipes(config)
+        disableRecipes.disableRecipes()
+
+        server.pluginManager.registerEvents(JoinAndLeaveHandler(cacheMap, mainBase), this)
+        server.pluginManager.registerEvents(OpenStations(this, config), this)
+
+
+        registerSchedulers(config, this, cacheMap)
 
 
     }
-    private fun registerSchedulers(config: Configuration<Config>, plugin: JavaPlugin) {
+    private fun registerSchedulers(config: Configuration<Config>, plugin: JavaPlugin, cacheMap: CacheMap) {
         object : BukkitRunnable() {
             override fun run() {
                 server.onlinePlayers.forEach { player ->
@@ -68,6 +88,14 @@ class QuasarUtils : JavaPlugin() {
                     }
                 }
         }.runTaskTimerAsynchronously(this, 0L, 5L)
+
+        object : BukkitRunnable() {
+            override fun run() {
+                server.onlinePlayers.forEach { player ->
+                    ApplyStages(cacheMap, plugin).detectPlayerStage(player)
+                }
+            }
+        }.runTaskTimer(this, 0L, 20L)
     }
 
 

@@ -6,7 +6,9 @@ import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.configs.Messages
 import ru.john.quasarutils.database.MainBase
@@ -14,6 +16,7 @@ import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
 
 class SetCharacterInfo(
+    private val plugin: JavaPlugin,
     private val miniMessage: MiniMessage,
     private val mainBase: MainBase,
     private val cHelper: ChatHelper,
@@ -44,7 +47,7 @@ class SetCharacterInfo(
 
     private fun deleteCharacter(player: Player, args: Array<String>) {
 
-        if (!player.hasPermission("quasarutils.delete")) {
+        if (!player.hasPermission("quasarutils.delete") && args.size>1) {
             cHelper.sendMessage(player, messages.data()!!.noPerm())
             return
         }
@@ -57,10 +60,11 @@ class SetCharacterInfo(
 
     private fun createCharacter(player: Player, args: Array<String>) {
 
-        if (!player.hasPermission("quasarutils.create")) {
+        if (!player.hasPermission("quasarutils.create") && args.size == 3) {
             cHelper.sendMessage(player, messages.data()!!.noPerm())
             return
         }
+        else cHelper.sendMessage(player, messages.data()!!.wrongUsage())
 
         if (!checkName(player, args[1]) || !checkSurname(player, args[2])) {
             return
@@ -73,6 +77,8 @@ class SetCharacterInfo(
 
         mainBase.addPlayer(player.uniqueId.toString(),args[1], args[2])
         cacheMap.addPlayerInfo(player.uniqueId.toString(),args[1], args[2])
+        val consoleSender: ConsoleCommandSender = Bukkit.getConsoleSender()
+        Bukkit.dispatchCommand(consoleSender, "lp user ${player.name} permission set welcome.teleport")
 
     }
 

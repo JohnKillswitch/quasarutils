@@ -1,8 +1,8 @@
 package ru.john.quasarutils
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
 import ru.john.quasarutils.util.CacheMap
 
 
@@ -23,8 +23,8 @@ class PlaceholderExpansion(
 
     override fun onRequest(player: OfflinePlayer, params: String): String {
         when (params) {
-            "name" -> return cacheMap.getPlayerInfo(player?.uniqueId.toString())?.first!!
-            "surname" -> return cacheMap.getPlayerInfo(player?.uniqueId.toString())?.second!!
+            "name" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.first!!
+            "surname" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.second!!
         }
         return "some_error"
 

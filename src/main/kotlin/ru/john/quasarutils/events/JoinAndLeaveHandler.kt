@@ -17,10 +17,15 @@ class JoinAndLeaveHandler(
     private fun onServerJoin(event: PlayerLoginEvent) {
         val pair = mainBase.getNameAndSurname(event.player.uniqueId.toString())
         if (pair.first != "") cacheMap.addPlayerInfo(event.player.uniqueId.toString(), pair.first, pair.second)
+
+        this.cacheMap.addPlayerVirus(this.mainBase.getPlayerVirus(event.player.uniqueId.toString())?.owner?.uniqueId.toString())
+
     }
 
     @EventHandler
     private fun onServerLeave(event: PlayerQuitEvent) {
         cacheMap.removePlayerInfo(event.player.uniqueId.toString())
+
+        this.cacheMap.removePlayerVirus(event.player.uniqueId.toString())
     }
 }

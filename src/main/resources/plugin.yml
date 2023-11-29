@@ -8,3 +8,11 @@ commands:
     description: 'указать имя и фамилию'
     usage: /<command>
     permission: char.create
+  quasarutils:
+    description: 'указать имя и фамилию'
+    usage: /<command>
+    permission: char.create
+  infect:
+    description: 'указать имя и фамилию'
+    usage: /<command>
+    permission: quasarutils.infect
