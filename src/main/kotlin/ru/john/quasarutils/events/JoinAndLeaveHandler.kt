@@ -18,10 +18,6 @@ class JoinAndLeaveHandler(
         val pair = mainBase.getNameAndSurname(event.player.uniqueId.toString())
         if (pair.first != "") cacheMap.addPlayerInfo(event.player.uniqueId.toString(), pair.first, pair.second)
 
-        //this.cacheMap.addPlayerVirus(this.mainBase.getPlayerVirus(event.player.uniqueId.toString())?.owner?.uniqueId.toString())
-
-        this.cacheMap.addPlayerVirus(event.player.uniqueId.toString())
-
     }
 
     @EventHandler
@@ -30,8 +26,5 @@ class JoinAndLeaveHandler(
         val uuid = event.player.uniqueId.toString()
 
         cacheMap.removePlayerInfo(uuid)
-
-        this.cacheMap.removePlayerVirus(uuid)
-        this.cacheMap.removeStageSchedulersMap(uuid)
     }
 }

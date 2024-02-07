@@ -2,7 +2,6 @@ package ru.john.quasarutils.database
 
 import com.zaxxer.hikari.HikariDataSource
 import org.bukkit.Bukkit
-import ru.john.quasarutils.util.PlayerVirus
 import java.sql.*
 import java.util.concurrent.CompletableFuture
 
@@ -77,42 +76,6 @@ class MainBase(
 
         preparedStatement.close()
         connection.close()
-    }
-
-    fun getPlayerVirus(uuid: String): PlayerVirus? {
-        val connection = getConnection()
-
-        try {
-
-            val sql = "SELECT * FROM Infection WHERE UUID = ?"
-            val preparedStatement = connection.prepareStatement(sql)
-            preparedStatement.setString(1, uuid)
-
-            val resultSet = preparedStatement.executeQuery()
-
-            if (resultSet.next()) {
-                val ownerUUID = resultSet.getString("UUID")
-                val infectionTime = resultSet.getLong("InfectionTime")
-
-                val player = Bukkit.getOfflinePlayer(ownerUUID)
-
-
-                return PlayerVirus(
-                    player,
-                    infectionTime
-                )
-            }
-        } catch (e: SQLException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                connection.close()
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
-        }
-
-        return null
     }
 
     private fun deletePlayerByUUID(uuid: String) {

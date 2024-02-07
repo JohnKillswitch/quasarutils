@@ -18,7 +18,7 @@ class DataSource(
     }
     private fun setupConnection(config: HikariConfig) {
 
-        config.setDriverClassName("org.sqlite.JDBC")
+        config.driverClassName = "org.sqlite.JDBC"
         config.jdbcUrl = "jdbc:sqlite:${plugin.dataFolder.toPath().resolve("database.sqlite.db")}"
         config.username = "root"
         config.password = ""

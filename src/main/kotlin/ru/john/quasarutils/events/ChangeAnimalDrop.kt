@@ -19,10 +19,11 @@ class ChangeAnimalDrop(
     fun checkEntity(event: EntityDeathEvent) {
         val animalList = this.config.data()?.changedAnimal()
         val entity  = event.entity
-        if (animalList?.contains(entity.type.name) == true && entity is Ageable) {
-            event.drops.clear()
-            event.drops.add(changeDrop(entity))
-        }
+
+        if (animalList?.contains(entity.type.name) == false || entity !is Ageable) return
+
+        event.drops.clear()
+        event.drops.add(changeDrop(entity))
     }
 
     private fun changeDrop (animal: Entity): ItemStack? {

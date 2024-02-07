@@ -4,7 +4,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
-import ru.john.quasarutils.commands.InfectCommands
 import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
@@ -13,7 +12,6 @@ import ru.john.quasarutils.crafts.ShaplessCrafts
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.MainBase
 import ru.john.quasarutils.events.*
-import ru.john.quasarutils.events.virus.ApplyStages
 import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
 import space.arim.dazzleconf.ConfigurationOptions

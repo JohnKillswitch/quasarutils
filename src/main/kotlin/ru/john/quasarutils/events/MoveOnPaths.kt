@@ -20,13 +20,17 @@ class MoveOnPaths(
         val feetBlock = block.location.add(0.0, -1.0, 0.0).block
         val blockTypes = config.data()!!.blockTypes()
         val duration = config.data()!!.duration()
+        val speedEffect = PotionEffect(
+            PotionEffectType.SPEED,
+            (duration * 30).toInt(),
+            0,
+            false,
+            false,
+            false)
 
-        if (blockTypes.contains(block.type.toString()) || blockTypes.contains(feetBlock.type.toString())) {
-            Bukkit.getScheduler().runTask(this.plugin, Runnable {
-                val speedEffect = PotionEffect(PotionEffectType.SPEED, (duration * 30).toInt(), 0)
-                player.addPotionEffect(speedEffect)
-            })
-        }
+        if (!blockTypes.contains(block.type.toString()) && !blockTypes.contains(feetBlock.type.toString())) return
+
+        Bukkit.getScheduler().runTask(this.plugin, Runnable { player.addPotionEffect(speedEffect) })
 
     }
 }
