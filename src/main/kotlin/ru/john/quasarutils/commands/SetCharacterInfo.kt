@@ -51,20 +51,24 @@ class SetCharacterInfo(
             cHelper.sendMessage(player, messages.data()!!.noPerm())
             return
         }
-        val target = Bukkit.getPlayerUniqueId(args[1])
+        val target = Bukkit.getPlayer(args[1])?.uniqueId
         mainBase.deletePlayerData(target.toString())
         cacheMap.removePlayerInfo(target.toString())
+        cHelper.sendMessage(player, "Персонаж успешно удален!")
 
 
     }
 
     private fun createCharacter(player: Player, args: Array<String>) {
 
-        if (!player.hasPermission("quasarutils.create") && args.size == 3) {
+        if (!player.hasPermission("quasarutils.create")) {
             cHelper.sendMessage(player, messages.data()!!.noPerm())
             return
         }
-        else cHelper.sendMessage(player, messages.data()!!.wrongUsage())
+        else if (args.size != 3) {
+            cHelper.sendMessage(player, messages.data()!!.wrongUsage())
+            return
+        }
 
         if (!checkName(player, args[1]) || !checkSurname(player, args[2])) {
             return
@@ -79,6 +83,7 @@ class SetCharacterInfo(
         cacheMap.addPlayerInfo(player.uniqueId.toString(),args[1], args[2])
         val consoleSender: ConsoleCommandSender = Bukkit.getConsoleSender()
         Bukkit.dispatchCommand(consoleSender, "lp user ${player.name} permission set welcome.teleport")
+        cHelper.sendMessage(player, "Персонаж успешно создан!")
 
     }
 

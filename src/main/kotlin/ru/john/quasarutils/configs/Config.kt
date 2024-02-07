@@ -21,6 +21,22 @@ interface Config {
         @ConfKey("furnaceTypes")
         fun furnaceTypes(): List<String>
 
+        @ConfComments("Отключить дроп с рыбалки")
+        @ConfDefault.DefaultStrings(
+                "BOW",
+                "ENCHANTED_BOOK",
+                "FISHING_ROD",
+                "NAUTILUS_SHELL",
+                "LEATHER",
+                "LEATHER_BOOTS",
+                "POTION",
+                "TRIPWIRE_HOOK",
+                "ROTTEN_FLESH"
+
+        )
+        @ConfKey("fishTypes")
+        fun fishTypes(): List<String>
+
         @ConfComments("Отключить крафты в верстаке")
         @ConfDefault.DefaultStrings(
                 "BREAD",
@@ -146,15 +162,30 @@ interface Config {
 
         @ConfComments("Блок и станция")
         @ConfDefault.DefaultMap(
-                "SMITHING_TABLE","weapons",
-                "ANVIL","tool",
-                "LOOM","materials",
-                "FLETCHING_TABLE","armors",
-                "BOOKSHELF","mage",
-                "SMOKER","food")
+                "CRAFTING_TABLE","DM:craft",
+                "SMOKER","MI:food",
+                "BLAST_FURNACE","MI:ingots",
+                "LOOM","DM:loom",
+                "SMITHING_TABLE","MI:blacksmith-materials",
+                "FLETCHING_TABLE","DM:fletching",
+                "BREWING_STAND","MI:potion",
+                "GRINDSTONE","DM:grindstone",
+                "ANVIL","DM:anvil"
+                )
         @ConfKey("stationBlocks")
         fun stationBlocks(): Map<String, String>
 
+        @ConfComments("У каких мобов заменяется дроп")
+        @ConfDefault.DefaultStrings(
+                "COW",
+                "SHEEP",
+                "PIG",
+                "CHICKEN",
+                "HORSE",
+                "DONKEY"
+        )
+        @ConfKey("changedAnimal")
+        fun changedAnimal(): List<String>
 
 
 

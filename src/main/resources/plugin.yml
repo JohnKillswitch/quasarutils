@@ -2,17 +2,13 @@ name: QuasarUtils
 version: '${version}'
 main: ru.john.quasarutils.QuasarUtils
 api-version: '1.16'
-depend: [PlaceholderAPI]
+depend: [PlaceholderAPI, kotlin-stdlib]
 commands:
   char:
     description: 'указать имя и фамилию'
     usage: /<command>
     permission: char.create
   quasarutils:
-    description: 'указать имя и фамилию'
+    description: 'Главная команда плагина'
     usage: /<command>
-    permission: char.create
-  infect:
-    description: 'указать имя и фамилию'
-    usage: /<command>
-    permission: quasarutils.infect
+    permission: quasarutils.main

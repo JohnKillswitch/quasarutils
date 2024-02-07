@@ -13,26 +13,21 @@ class CacheMap(
     private val mainBase: MainBase
 ) {
     private val cacheMap = HashMap<String, Pair<String, String>>()
-    private val virusCacheMap = HashMap<String, PlayerVirus>()
+    private val virusCacheMap = HashMap<String, PlayerVirus?>()
     private val firstStageSchedulersMap = HashMap<String, BukkitTask>()
 
     fun getPlayerVirus(uuid: String): PlayerVirus? {
-
         if (this.virusCacheMap.containsKey(uuid)) return virusCacheMap[uuid]
-        return mainBase.getPlayerVirus(uuid)
+        return null
 
     }
 
     fun addPlayerVirus(uuid: String) {
-
         this.mainBase.getPlayerVirus(uuid)?.let { this.virusCacheMap.put(uuid, it) }
-        this.mainBase.insertInfectionData(uuid, Instant.now().toEpochMilli())
-
     }
 
     fun removePlayerVirus(uuid: String) {
         this.virusCacheMap.remove(uuid)
-        this.mainBase.deleteInfectionDataByUUID(uuid)
     }
 
     fun getStageSchedulersMap(uuid: String) =

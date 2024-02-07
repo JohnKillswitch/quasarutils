@@ -9,12 +9,10 @@ import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
 import ru.john.quasarutils.configs.Messages
+import ru.john.quasarutils.crafts.ShaplessCrafts
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.MainBase
-import ru.john.quasarutils.events.DisableRecipes
-import ru.john.quasarutils.events.JoinAndLeaveHandler
-import ru.john.quasarutils.events.MoveOnPaths
-import ru.john.quasarutils.events.OpenStations
+import ru.john.quasarutils.events.*
 import ru.john.quasarutils.events.virus.ApplyStages
 import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
@@ -65,16 +63,17 @@ class QuasarUtils : JavaPlugin() {
         getCommand("quasarutils")!!.setExecutor(
             MainCommand(this, placeholderExpansion, cacheMap)
         )
-        getCommand("infect")!!.setExecutor(
-            InfectCommands(this, cacheMap)
-        )
 
         val disableRecipes = DisableRecipes(config)
         disableRecipes.disableRecipes()
 
+        ShaplessCrafts(this).createRecipes()
+
         server.pluginManager.registerEvents(JoinAndLeaveHandler(cacheMap, mainBase), this)
         server.pluginManager.registerEvents(OpenStations(this, config), this)
-
+        server.pluginManager.registerEvents(DisableDisabledFishing(config), this)
+        server.pluginManager.registerEvents(DisableBreed(), this)
+        server.pluginManager.registerEvents(ChangeAnimalDrop(config),this)
 
         registerSchedulers(config, this, cacheMap)
 
@@ -89,13 +88,13 @@ class QuasarUtils : JavaPlugin() {
                 }
         }.runTaskTimerAsynchronously(this, 0L, 5L)
 
-        object : BukkitRunnable() {
-            override fun run() {
-                server.onlinePlayers.forEach { player ->
-                    ApplyStages(cacheMap, plugin).detectPlayerStage(player)
-                }
-            }
-        }.runTaskTimer(this, 0L, 20L)
+//        object : BukkitRunnable() {
+//            override fun run() {
+//                server.onlinePlayers.forEach { player ->
+//                    ApplyStages(cacheMap, plugin).detectPlayerStage(player)
+//                }
+//            }
+//        }.runTaskTimer(this, 0L, 20L)
     }
 
 

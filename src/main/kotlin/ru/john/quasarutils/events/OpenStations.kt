@@ -27,11 +27,20 @@ class OpenStations(
 
         configBlocks?.get(clickedBlock?.type.toString()).takeIf { player.isSneaking }?.let {
             event.isCancelled = true
-            scheduleCommandWithDelay(2) {
+            if (it.startsWith("DM:", ignoreCase = true)) {
+                scheduleCommandWithDelay(2) {
                     Bukkit.getServer().dispatchCommand(
                         Bukkit.getConsoleSender(),
-                        "mi stations open $it ${player.name}")
+                        "dm open ${it.drop(3)} ${player.name}")
                 }
+            }
+            if (it.startsWith("MI:", ignoreCase = true)) {
+                scheduleCommandWithDelay(2) {
+                    Bukkit.getServer().dispatchCommand(
+                        Bukkit.getConsoleSender(),
+                        "mi stations open ${it.drop(3)} ${player.name}")
+                }
+            }
         }
     }
 

@@ -129,11 +129,8 @@ class MainBase(
     }
 
     fun deletePlayerData(uuid: String) {
-        val thread = Thread {
             deletePlayerByUUID(uuid)
-        }
 
-        thread.start()
     }
 
     private fun insertPlayer(uuid: String, name: String, surname: String) {
@@ -156,11 +153,7 @@ class MainBase(
     }
 
     fun addPlayer (uuid: String, name: String, surname: String) {
-        val thread = Thread {
             insertPlayer(uuid, name, surname)
-        }
-
-        thread.start()
     }
 
     private fun getPlayerInfo(uuid: String): Pair<String, String> {

@@ -53,10 +53,11 @@ class ApplyStages(
     }
 
     private fun startFirstStage(player: Player): BukkitTask {
+
         return Bukkit.getScheduler().runTaskTimer(
             this.plugin,
             Runnable {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "screeneffect fullscreen #000000 20 60 20 nofreeze ${player.name}}")
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "screeneffect fullscreen #000000 20 60 20 nofreeze ${player.name}")
             },
             0L,
             5 * 60 * 20L
