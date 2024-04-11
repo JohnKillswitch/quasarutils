@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.configs.Config
+import ru.john.quasarutils.util.ArmorUtils
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -30,18 +31,8 @@ class PreventHardArmorSwim(
 
     @EventHandler
     fun checkPlayerArmor(event: PlayerMoveEvent) {
-
-        val player = event.player
-
-        if (!player.isUnderWater) return
-
-        val heavyArmorPieces = player.inventory.armorContents
-            .filterNotNull()
-            .count { item ->
-                NBTItem.get(item).tags.contains("MMOITEMS_DISPLAYED_TYPE") &&
-                NBTItem.get(item)["MMOITEMS_DISPLAYED_TYPE"].toString().filterNot { it == '"' } == "&fТяжёлая броня" }
-
-        if (heavyArmorPieces > 0 && event.to.y > event.from.y) player.velocity = NEGATIVE_VELOCITY
+        val armorIsHeavy: Boolean = ArmorUtils.playerArmorIsHeavy(event.player)
+        if (armorIsHeavy && event.to.y > event.from.y) event.player.velocity = NEGATIVE_VELOCITY
     }
 
 

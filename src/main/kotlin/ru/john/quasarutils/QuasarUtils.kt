@@ -9,6 +9,7 @@ import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
 import ru.john.quasarutils.configs.Messages
+import ru.john.quasarutils.configs.PlayerTasksConfig
 import ru.john.quasarutils.crafts.ShaplessCrafts
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.CharBase
@@ -20,7 +21,13 @@ import space.arim.dazzleconf.ConfigurationOptions
 
 class QuasarUtils : JavaPlugin() {
 
+    companion object {
+        var instance: JavaPlugin? = null
+        var playerTasksConfig: Configuration<PlayerTasksConfig>? = null
+    }
+
     override fun onEnable() {
+        instance = this
 
         Bukkit.resetRecipes()
 
@@ -40,6 +47,13 @@ class QuasarUtils : JavaPlugin() {
             Config::class.java,
             ConfigurationOptions.defaults()
         )
+        playerTasksConfig = Configuration.create(
+            this,
+            "playerTasksConfig.yml",
+            PlayerTasksConfig::class.java,
+            ConfigurationOptions.defaults()
+        )
+
         messages.reloadConfig()
         config.reloadConfig()
 
@@ -82,7 +96,7 @@ class QuasarUtils : JavaPlugin() {
         server.pluginManager.registerEvents(DisableBreed(), this)
         server.pluginManager.registerEvents(ChangeAnimalDrop(config),this)
         server.pluginManager.registerEvents(PreventHardArmorSwim(config, this), this)
-        //server.pluginManager.registerEvents(PreventNotFarmerCrops(config, this), this)
+        server.pluginManager.registerEvents(StartPlayerRunnables(), this)
         server.pluginManager.registerEvents(PreventEatingGapple(config, this), this)
 
         registerSchedulers(config, this, cacheMap, landsApi)
@@ -93,9 +107,9 @@ class QuasarUtils : JavaPlugin() {
         object : BukkitRunnable() {
             override fun run() {
                 server.onlinePlayers.forEach { player ->
-                        MoveOnPaths(config, plugin).checkBlock(player)
-                    }
+                    MoveOnPaths(config, plugin).checkBlock(player)
                 }
+            }
         }.runTaskTimerAsynchronously(this, 0L, 5L)
         object : BukkitRunnable() {
             override fun run() {
@@ -104,14 +118,6 @@ class QuasarUtils : JavaPlugin() {
                 }
             }
         }.runTaskTimerAsynchronously(this, 0L, 20L)
-
-//        object : BukkitRunnable() {
-//            override fun run() {
-//                server.onlinePlayers.forEach { player ->
-//                    ApplyStages(cacheMap, plugin).detectPlayerStage(player)
-//                }
-//            }
-//        }.runTaskTimer(this, 0L, 20L)
     }
 
 
