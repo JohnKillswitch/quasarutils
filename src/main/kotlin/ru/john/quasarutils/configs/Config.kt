@@ -187,6 +187,4 @@ interface Config {
         @ConfKey("changedAnimal")
         fun changedAnimal(): List<String>
 
-
-
 }

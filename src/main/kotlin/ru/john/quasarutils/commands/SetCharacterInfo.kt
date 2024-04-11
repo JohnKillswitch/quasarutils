@@ -2,7 +2,6 @@ package ru.john.quasarutils.commands
 
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -11,14 +10,14 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.configs.Messages
-import ru.john.quasarutils.database.MainBase
+import ru.john.quasarutils.database.CharBase
 import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
 
 class SetCharacterInfo(
     private val plugin: JavaPlugin,
     private val miniMessage: MiniMessage,
-    private val mainBase: MainBase,
+    private val charBase: CharBase,
     private val cHelper: ChatHelper,
     private val cacheMap: CacheMap,
     private val messages: Configuration<Messages>
@@ -52,7 +51,7 @@ class SetCharacterInfo(
             return
         }
         val target = Bukkit.getPlayer(args[1])?.uniqueId
-        mainBase.deletePlayerData(target.toString())
+        charBase.deletePlayerData(target.toString())
         cacheMap.removePlayerInfo(target.toString())
         cHelper.sendMessage(player, "Персонаж успешно удален!")
 
@@ -79,7 +78,7 @@ class SetCharacterInfo(
             return
         }
 
-        mainBase.addPlayer(player.uniqueId.toString(),args[1], args[2])
+        charBase.addPlayer(player.uniqueId.toString(),args[1], args[2])
         cacheMap.addPlayerInfo(player.uniqueId.toString(),args[1], args[2])
         val consoleSender: ConsoleCommandSender = Bukkit.getConsoleSender()
         Bukkit.dispatchCommand(consoleSender, "lp user ${player.name} permission set welcome.teleport")

@@ -23,8 +23,8 @@ class PlaceholderExpansion(
 
     override fun onRequest(player: OfflinePlayer, params: String): String {
         when (params) {
-            "name" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.first!!
-            "surname" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.second!!
+            "name" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.first!!.replaceFirstChar { char -> char.uppercase() }
+            "surname" -> return cacheMap.getPlayerInfo(player.uniqueId.toString())?.second!!.replaceFirstChar { char -> char.uppercase() }
         }
         return "some_error"
 

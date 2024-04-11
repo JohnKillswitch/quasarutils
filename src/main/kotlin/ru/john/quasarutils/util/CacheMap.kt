@@ -1,16 +1,11 @@
 package ru.john.quasarutils.util
 
-import com.sk89q.worldguard.util.profile.util.UUIDs
-import jdk.jfr.Timestamp
-import org.bukkit.OfflinePlayer
 import org.bukkit.scheduler.BukkitTask
-import ru.john.quasarutils.database.MainBase
-import java.time.Instant
-import java.util.*
+import ru.john.quasarutils.database.CharBase
 import kotlin.collections.HashMap
 
 class CacheMap(
-    private val mainBase: MainBase
+    private val charBase: CharBase
 ) {
     private val cacheMap = HashMap<String, Pair<String, String>>()
     private val firstStageSchedulersMap = HashMap<String, BukkitTask>()
@@ -18,7 +13,7 @@ class CacheMap(
     fun getPlayerInfo (uuid: String): Pair<String, String>? {
 
         if (this.cacheMap[uuid] != null) return cacheMap[uuid]
-        return mainBase.getNameAndSurname(uuid)
+        return charBase.getNameAndSurname(uuid)
     }
 
     fun addPlayerInfo (uuid: String, name: String, surname: String) {

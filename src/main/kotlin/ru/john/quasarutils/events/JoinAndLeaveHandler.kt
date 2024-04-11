@@ -4,13 +4,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import ru.john.quasarutils.database.MainBase
+import ru.john.quasarutils.database.CharBase
 import ru.john.quasarutils.util.CacheMap
 import java.sql.SQLException
 
 class JoinAndLeaveHandler(
     private val cacheMap: CacheMap,
-    private val mainBase: MainBase
+    private val mainBase: CharBase
 ) : Listener {
     @EventHandler
     @Throws(SQLException::class)

@@ -1,11 +1,10 @@
 package ru.john.quasarutils.database
 
 import com.zaxxer.hikari.HikariDataSource
-import org.bukkit.Bukkit
 import java.sql.*
 import java.util.concurrent.CompletableFuture
 
-class MainBase(
+class CharBase(
     private val hikariDataSource: HikariDataSource
 ) {
     fun createCharacterTable() {
@@ -24,57 +23,6 @@ class MainBase(
         statement.execute(sql)
 
         statement.close()
-        connection.close()
-    }
-    fun createVirusTable() {
-        val connection = getConnection()
-
-        val sql = """
-            CREATE TABLE IF NOT EXISTS Infection (
-                UUID TEXT,
-                InfectionTime LONG,
-                PRIMARY KEY (UUID)
-            );
-        """
-
-        val statement = connection.createStatement()
-        statement.execute(sql)
-
-        statement.close()
-        connection.close()
-    }
-
-    fun insertInfectionData(uuid: String, infectionTime: Long) {
-        val connection = getConnection()
-
-        val sql = """
-        INSERT INTO Infection (UUID, InfectionTime)
-        VALUES (?, ?)
-        ON CONFLICT (UUID) DO UPDATE SET InfectionTime = ?;
-    """
-
-        val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
-        preparedStatement.setString(1, uuid)
-        preparedStatement.setLong(2, infectionTime)
-        preparedStatement.setLong(3, infectionTime)
-
-        preparedStatement.executeUpdate()
-
-        preparedStatement.close()
-        connection.close()
-    }
-
-    fun deleteInfectionDataByUUID(uuid: String) {
-        val connection = getConnection()
-
-        val sql = "DELETE FROM Infection WHERE UUID = ?;"
-
-        val preparedStatement: PreparedStatement = connection.prepareStatement(sql)
-        preparedStatement.setString(1, uuid)
-
-        preparedStatement.executeUpdate()
-
-        preparedStatement.close()
         connection.close()
     }
 
