@@ -46,7 +46,6 @@ class QuasarUtils : JavaPlugin() {
 
         val hikariDataSource = DataSource(this).create()
         val charBase = CharBase(hikariDataSource)
-        charBase.createVirusTable()
         charBase.createCharacterTable()
         val cacheMap = CacheMap(charBase)
         val placeholderExpansion = PlaceholderExpansion(cacheMap)
