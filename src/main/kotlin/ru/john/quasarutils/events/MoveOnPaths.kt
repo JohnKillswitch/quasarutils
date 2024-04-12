@@ -12,7 +12,7 @@ import ru.john.quasarutils.configs.Config
 class MoveOnPaths(
     private val config: Configuration<Config>,
     private val plugin: JavaPlugin
-) : Listener {
+) {
 
 
     fun checkBlock(player: Player) {

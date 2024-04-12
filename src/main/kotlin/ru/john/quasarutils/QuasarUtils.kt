@@ -90,9 +90,7 @@ class QuasarUtils : JavaPlugin() {
             MainCommand(this, placeholderExpansion, cacheMap!!)
         )
 
-
-
-        val disableRecipes = DisableRecipes(defaultConfig!!)
+        val disableRecipes = DisableRecipes()
         disableRecipes.disableRecipes()
 
         ShaplessCrafts(this).createRecipes()
@@ -103,6 +101,8 @@ class QuasarUtils : JavaPlugin() {
         serviceManager = ServiceLoader()
 
         registerSchedulers(defaultConfig!!, this, cacheMap!!, landsApi)
+
+
     }
     private fun registerSchedulers(config: Configuration<Config>, plugin: JavaPlugin, cacheMap: CacheMap, landsApi: LandsIntegration) {
         object : BukkitRunnable() {

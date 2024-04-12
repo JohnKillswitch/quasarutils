@@ -7,16 +7,17 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.BrewEvent
 import org.bukkit.inventory.*
 import ru.john.quasarutils.Configuration
+import ru.john.quasarutils.QuasarUtils
 import ru.john.quasarutils.configs.Config
 
-class DisableRecipes(
-    private val config: Configuration<Config>
-) : Listener {
+class DisableRecipes {
 
     fun disableRecipes() {
 
-        val furnaceCrafts = this.config.data()?.furnaceTypes()
-        val benchCrafts = this.config.data()?.benchTypes()
+        val config = QuasarUtils.defaultConfig!!
+
+        val furnaceCrafts = config.data()?.furnaceTypes()
+        val benchCrafts = config.data()?.benchTypes()
 
         furnaceCrafts?.forEach { type ->
             Bukkit.recipeIterator().forEachRemaining {recipe ->

@@ -11,9 +11,9 @@ class EventService : QuasarService("event") {
         val events = QuasarUtils.reflections.getSubTypesOf(Listener::class.java)
         val instance = QuasarUtils.instance!!
         events.forEach {
+            instance.logger.info(String.format("Ивент [%s] зарегистрирован.", it.simpleName))
             val listener = it.getDeclaredConstructor().newInstance()
             instance.server.pluginManager.registerEvents(listener, instance)
-            instance.logger.info(String.format("Ивент [%s] зарегистрирован.", it.simpleName))
         }
     }
     companion object {

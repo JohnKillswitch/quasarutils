@@ -14,10 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.configs.Config
 
-class PreventNotFarmerCrops(
-    private val config: Configuration<Config>,
-    private val plugin: JavaPlugin
-) : Listener {
+class PreventNotFarmerCrops : Listener {
 
     @EventHandler
     fun checkBlock(event: BlockDropItemEvent) {

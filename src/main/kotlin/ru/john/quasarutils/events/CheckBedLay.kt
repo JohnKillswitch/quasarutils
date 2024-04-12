@@ -20,7 +20,7 @@ import kotlin.random.Random
 class CheckBedLay(
     private val landsApi: LandsIntegration,
     private val plugin: JavaPlugin
-) : Listener {
+) {
 
     fun checkPlayerLay(player: Player) {
 
