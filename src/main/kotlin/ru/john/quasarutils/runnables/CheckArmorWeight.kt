@@ -24,7 +24,7 @@ class CheckArmorWeight(
 ) : PlayerRunnable(player) {
     override fun run() {
         if(!player.isOnline) cancel()
-        // if(!ArmorUtils.playerArmorIsHeavy(player)) return
+        if(!ArmorUtils.playerArmorIsHeavy(player)) return
 
         val config: Configuration<PlayerTasksConfig> = QuasarUtils.playerTasksConfig!!
         val location = player.location
