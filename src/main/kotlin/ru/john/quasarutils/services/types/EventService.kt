@@ -13,7 +13,7 @@ class EventService : QuasarService("event") {
         events.forEach {
             val listener = it.getDeclaredConstructor().newInstance()
             instance.server.pluginManager.registerEvents(listener, instance)
-            instance.logger.info(String.format("Ивент [%s] зарегистрирован."))
+            instance.logger.info(String.format("Ивент [%s] зарегистрирован.", it.simpleName))
         }
     }
     companion object {
