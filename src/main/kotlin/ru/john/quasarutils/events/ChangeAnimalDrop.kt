@@ -8,16 +8,15 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
 import ru.john.quasarutils.Configuration
+import ru.john.quasarutils.QuasarUtils
 import ru.john.quasarutils.configs.Config
 
 
-class ChangeAnimalDrop(
-    private val config: Configuration<Config>
-) : Listener {
+class ChangeAnimalDrop : Listener {
 
     @EventHandler
     fun checkEntity(event: EntityDeathEvent) {
-        val animalList = this.config.data()?.changedAnimal()
+        val animalList = QuasarUtils.defaultConfig!!.data()?.changedAnimal()
         val entity  = event.entity
 
         if (animalList?.contains(entity.type.name) == false || entity !is Ageable) return

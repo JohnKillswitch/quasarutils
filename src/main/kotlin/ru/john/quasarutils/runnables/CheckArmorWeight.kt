@@ -1,12 +1,10 @@
 package ru.john.quasarutils.runnables
 
-import me.angeschossen.lands.api.utils.PlayerUtils
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.QuasarUtils
 import ru.john.quasarutils.configs.PlayerTasksConfig
@@ -20,8 +18,8 @@ import kotlin.math.abs
 при совпадении всех условий - ломает блок под игроком
  */
 class CheckArmorWeight(
-    private val player: Player
-) : PlayerRunnable(player) {
+    private val player: Player,
+) : PlayerRunnable(player, 20L, 0L) {
     override fun run() {
         if(!player.isOnline) cancel()
         if(!ArmorUtils.playerArmorIsHeavy(player)) return

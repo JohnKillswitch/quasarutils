@@ -45,6 +45,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.4'
     compileOnly 'com.github.Gecolay.GSit:core:1.8.0'
     compileOnly "com.github.angeschossen:LandsAPI:6.44.14"
+    implementation "org.reflections:reflections:0.10.2"
 }
 
 shadowJar {

@@ -8,10 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.configs.Config
 
-class PreventEatingGapple(
-    private val config: Configuration<Config>,
-    private val plugin: JavaPlugin
-) : Listener {
+class PreventEatingGapple : Listener {
 
     @EventHandler
     fun checkFood(event: PlayerItemConsumeEvent) {

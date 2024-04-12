@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.reflections.Reflections
 import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
@@ -14,6 +15,7 @@ import ru.john.quasarutils.crafts.ShaplessCrafts
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.CharBase
 import ru.john.quasarutils.events.*
+import ru.john.quasarutils.services.ServiceLoader
 import ru.john.quasarutils.util.CacheMap
 import ru.john.quasarutils.util.ChatHelper
 import space.arim.dazzleconf.ConfigurationOptions
@@ -24,6 +26,11 @@ class QuasarUtils : JavaPlugin() {
     companion object {
         var instance: JavaPlugin? = null
         var playerTasksConfig: Configuration<PlayerTasksConfig>? = null
+        var reflections: Reflections = Reflections("ru.john")
+        var serviceManager: ServiceLoader? = null
+        var cacheMap: CacheMap? = null
+        var charBase: CharBase? = null
+        var defaultConfig: Configuration<Config>? = null
     }
 
     override fun onEnable() {
@@ -41,12 +48,14 @@ class QuasarUtils : JavaPlugin() {
             Messages::class.java,
             ConfigurationOptions.defaults()
         )
-        val config = Configuration.create(
+
+        defaultConfig = Configuration.create(
             this,
             "config.yml",
             Config::class.java,
             ConfigurationOptions.defaults()
         )
+
         playerTasksConfig = Configuration.create(
             this,
             "playerTasksConfig.yml",
@@ -55,34 +64,35 @@ class QuasarUtils : JavaPlugin() {
         )
 
         messages.reloadConfig()
-        config.reloadConfig()
+        defaultConfig!!.reloadConfig()
+        playerTasksConfig!!.reloadConfig()
 
 
         val hikariDataSource = DataSource(this).create()
-        val charBase = CharBase(hikariDataSource)
-        charBase.createCharacterTable()
-        val cacheMap = CacheMap(charBase)
-        val placeholderExpansion = PlaceholderExpansion(cacheMap)
+        charBase = CharBase(hikariDataSource)
+        charBase!!.createCharacterTable()
+        cacheMap = CacheMap(charBase!!)
+        val placeholderExpansion = PlaceholderExpansion(cacheMap!!)
         val landsApi: LandsIntegration = LandsIntegration.of(this)
 
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            PlaceholderExpansion(cacheMap).register()
+            PlaceholderExpansion(cacheMap!!).register()
         }
 
 
         val cHelper = ChatHelper(miniMessage)
 
         getCommand("char")!!.setExecutor(
-            SetCharacterInfo(this, miniMessage, charBase, cHelper, cacheMap, messages)
+            SetCharacterInfo(this, miniMessage, charBase!!, cHelper, cacheMap!!, messages)
         )
 
         getCommand("quasarutils")!!.setExecutor(
-            MainCommand(this, placeholderExpansion, cacheMap)
+            MainCommand(this, placeholderExpansion, cacheMap!!)
         )
 
 
 
-        val disableRecipes = DisableRecipes(config)
+        val disableRecipes = DisableRecipes(defaultConfig!!)
         disableRecipes.disableRecipes()
 
         ShaplessCrafts(this).createRecipes()
@@ -90,18 +100,9 @@ class QuasarUtils : JavaPlugin() {
         Bukkit.updateRecipes()
         Bukkit.updateResources()
 
-        server.pluginManager.registerEvents(JoinAndLeaveHandler(cacheMap, charBase), this)
-        server.pluginManager.registerEvents(OpenStations(this, config), this)
-        server.pluginManager.registerEvents(DisableDisabledFishing(config), this)
-        server.pluginManager.registerEvents(DisableBreed(), this)
-        server.pluginManager.registerEvents(ChangeAnimalDrop(config),this)
-        server.pluginManager.registerEvents(PreventHardArmorSwim(config, this), this)
-        server.pluginManager.registerEvents(StartPlayerRunnables(), this)
-        server.pluginManager.registerEvents(PreventEatingGapple(config, this), this)
+        serviceManager = ServiceLoader()
 
-        registerSchedulers(config, this, cacheMap, landsApi)
-
-
+        registerSchedulers(defaultConfig!!, this, cacheMap!!, landsApi)
     }
     private fun registerSchedulers(config: Configuration<Config>, plugin: JavaPlugin, cacheMap: CacheMap, landsApi: LandsIntegration) {
         object : BukkitRunnable() {

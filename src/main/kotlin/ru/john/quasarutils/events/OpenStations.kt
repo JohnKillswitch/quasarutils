@@ -8,22 +8,22 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.plugin.java.JavaPlugin
 import ru.john.quasarutils.Configuration
+import ru.john.quasarutils.QuasarUtils
 import ru.john.quasarutils.configs.Config
 import ru.john.quasarutils.configs.Messages
 
-class OpenStations(
-    private val plugin: JavaPlugin,
-    private val config: Configuration<Config>
-) : Listener {
+class OpenStations : Listener {
     @EventHandler
     fun checkBlock(event: PlayerInteractEvent) {
+
+        val config = QuasarUtils.defaultConfig!!
 
         val action = event.action
         if (action != Action.RIGHT_CLICK_BLOCK) return
 
         val player = event.player
         val clickedBlock = event.clickedBlock
-        val configBlocks = this.config.data()?.stationBlocks()
+        val configBlocks = config.data()?.stationBlocks()
 
         configBlocks?.get(clickedBlock?.type.toString()).takeIf { player.isSneaking }?.let {
             event.isCancelled = true
@@ -44,7 +44,10 @@ class OpenStations(
         }
     }
 
-    private fun scheduleCommandWithDelay(delayTicks: Long, task: () -> Unit) =
-        Bukkit.getServer().scheduler.runTaskLater(this.plugin, Runnable(task), delayTicks).taskId
-
+    private fun scheduleCommandWithDelay(delayTicks: Long, task: () -> Unit) {
+        Bukkit.getServer().scheduler.runTaskLater(
+            QuasarUtils.instance!!,
+            Runnable(task), delayTicks
+        ).taskId
+    }
 }

@@ -24,10 +24,7 @@ val MMOITEMS_DISPLAYED_TAG = "MMOITEMS_DISPLAYED_TYPE"
 val HEAVY_ARMOR_DISPLAY_NAME = "&fТяжёлая броня"
 val NEGATIVE_VELOCITY = Vector(0f, -0.175f, 0f)
 
-class PreventHardArmorSwim(
-    private val config: Configuration<Config>,
-    private val plugin: JavaPlugin
-) : Listener {
+class PreventHardArmorSwim : Listener {
 
     @EventHandler
     fun checkPlayerArmor(event: PlayerMoveEvent) {
