@@ -9,8 +9,11 @@ import ru.john.quasarutils.services.types.PlayerRunnablesService
 
 
 class TriggerPlayerRunnables : Listener {
+
     @EventHandler
-    fun startRunnables(event: PlayerJoinEvent) {
+    fun registerPlayer(event: PlayerJoinEvent) {
+        var service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
+        service.addPlayer(event.player)
         PlayerRunnablesService(event.player)
     }
 

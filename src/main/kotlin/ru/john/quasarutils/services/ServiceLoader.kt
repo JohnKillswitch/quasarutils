@@ -3,6 +3,7 @@ package ru.john.quasarutils.services
 import org.bukkit.entity.Player
 import ru.john.quasarutils.QuasarUtils
 import ru.john.quasarutils.services.types.EventService
+import ru.john.quasarutils.services.types.PlayerDataContainerService
 import ru.john.quasarutils.services.types.PlayerRunnablesService
 
 /*
@@ -24,6 +25,7 @@ class ServiceLoader(
             typeField.isAccessible = true
 
             if(typeField.get(it).equals(ServiceType.STATIC)) {
+
                 val service = it.getDeclaredConstructor().newInstance()
                 services.add(service)
             }
@@ -42,6 +44,10 @@ class ServiceLoader(
 
     fun getEventService() : EventService {
         return getService("event", false) as EventService
+    }
+
+    fun getPlayerDataContainerService() : PlayerDataContainerService {
+        return getService("pdc", false) as PlayerDataContainerService
     }
 
     fun getPlayerRunnablesService(player: Player) : PlayerRunnablesService {
