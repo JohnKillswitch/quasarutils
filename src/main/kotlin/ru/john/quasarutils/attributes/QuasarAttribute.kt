@@ -13,12 +13,14 @@ class QuasarAttribute(
     companion object {
 
         private val thirstKey = NamespacedKey(QuasarUtils.instance!!, "thirst")
+        private val staminaKey = NamespacedKey(QuasarUtils.instance!!, "stamina")
 
         fun getDefaultAttributes() : ArrayList<QuasarAttribute> {
             val list: ArrayList<QuasarAttribute> = ArrayList()
             val config = QuasarUtils.playerActionsConfig!!.data()!!
-            // Жажда
+            // Жажда и стамина
             list.add(QuasarAttribute("thirst", config.thirstMaxValue().toDouble(), thirstKey, PersistentDataType.DOUBLE))
+            list.add(QuasarAttribute("stamina", config.maxStaminaValue().toDouble(), staminaKey, PersistentDataType.DOUBLE))
             return list
         }
     }

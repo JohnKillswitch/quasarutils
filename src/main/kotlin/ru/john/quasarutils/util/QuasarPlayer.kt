@@ -15,6 +15,7 @@ class QuasarPlayer(
 ) {
     private val attributes: ArrayList<QuasarAttribute> = ArrayList()
     var drinkCooldown: Boolean = false
+    var staminaCooldown: Boolean = false
 
     init { if(attributes.isEmpty()) QuasarAttribute.getDefaultAttributes() }
 

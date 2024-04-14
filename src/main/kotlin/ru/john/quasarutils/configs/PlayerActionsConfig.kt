@@ -72,7 +72,7 @@ interface PlayerActionsConfig {
     fun blockThirstAddMaxDistance(): Int
 
     @ConfComments("Задержка между глотками воды из источника(в тиках)")
-    @ConfDefault.DefaultInteger(10)
+    @ConfDefault.DefaultInteger(5)
     @ConfKey("handDrinkWaterCooldown")
     fun handDrinkWaterCooldown(): Int
 
@@ -82,7 +82,27 @@ interface PlayerActionsConfig {
     fun maxStaminaValue(): Int
 
     @ConfComments("Насколько уменьшается значение стамины при беге")
-    @ConfDefault.DefaultInteger(1)
+    @ConfDefault.DefaultDouble(0.6)
     @ConfKey("staminaPerRun")
-    fun staminaPerRun(): Int
+    fun staminaPerRun(): Double
+
+    @ConfComments("Насколько прибавляется стамина при отдыхе(за секунду)")
+    @ConfDefault.DefaultDouble(0.5)
+    @ConfKey("staminaHeal")
+    fun staminaHeal(): Double
+
+    @ConfComments("Насколько уменьшается значение стамины при прыжке")
+    @ConfDefault.DefaultDouble(2.0)
+    @ConfKey("staminaPerJump")
+    fun staminaPerJump(): Double
+
+    @ConfComments("Длительность эффекта замедления при неимении стамины(в секундах)")
+    @ConfDefault.DefaultInteger(3)
+    @ConfKey("staminaSlowEffectDuration")
+    fun staminaSlowEffectDuration(): Int
+
+    @ConfComments("Длительность кулдауна стамины(в тиках)")
+    @ConfDefault.DefaultInteger(60)
+    @ConfKey("staminaCooldownDuration")
+    fun staminaCooldownDuration(): Int
 }

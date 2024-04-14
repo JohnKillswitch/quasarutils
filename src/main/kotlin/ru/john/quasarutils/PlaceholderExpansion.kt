@@ -37,6 +37,14 @@ class PlaceholderExpansion : PlaceholderExpansion() {
                 val config = QuasarUtils.playerActionsConfig!!.data()!!
                 return config.thirstMaxValue().toString()
             }
+            "stamina" -> {
+                val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
+                return service.getPlayerWrappedObject(player!!.uniqueId)!!.getAttribute("stamina")!!.value.toString()
+            }
+            "maxStamina" -> {
+                val config = QuasarUtils.playerActionsConfig!!.data()!!
+                return config.maxStaminaValue().toString()
+            }
         }
         return "some_error"
 
@@ -53,6 +61,14 @@ class PlaceholderExpansion : PlaceholderExpansion() {
             "maxThirst" -> {
                 val config = QuasarUtils.playerActionsConfig!!.data()!!
                 return config.thirstMaxValue().toString()
+            }
+            "stamina" -> {
+                val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
+                return service.getPlayerWrappedObject(player!!.uniqueId)!!.getAttribute("stamina")!!.value.toString()
+            }
+            "maxStamina" -> {
+                val config = QuasarUtils.playerActionsConfig!!.data()!!
+                return config.maxStaminaValue().toString()
             }
         }
         return "some_error"

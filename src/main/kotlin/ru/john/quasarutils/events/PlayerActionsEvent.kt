@@ -1,19 +1,20 @@
 package ru.john.quasarutils.events
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import ru.john.quasarutils.QuasarUtils
-import ru.john.quasarutils.util.QuasarPlayer
 
-class WaterDrinkEvent : Listener {
+class PlayerActionsEvent : Listener {
 
     @EventHandler
     fun drinkUseHands(event: PlayerInteractEvent) {
@@ -83,6 +84,46 @@ class WaterDrinkEvent : Listener {
         }
 
         wrappedObject.setAttribute("thirst", value)
+    }
+
+    @EventHandler
+    fun removeStamina(event: PlayerJumpEvent) {
+        val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
+        val wrappedObject = service.getPlayerWrappedObject(event.player)!!
+        val attribute = wrappedObject.getAttribute("stamina")!!
+        val config = QuasarUtils.playerActionsConfig!!.data()!!
+
+        if(wrappedObject.staminaCooldown) event.isCancelled = true
+
+        if(attribute.value-config.staminaPerJump() <= 0) {
+            val instance = QuasarUtils.instance!!
+
+            event.player.addPotionEffect(
+                PotionEffect(
+                    PotionEffectType.SLOW,
+                    config.staminaSlowEffectDuration()*20,
+                    3,
+                    false,
+                    false,
+                    false
+                )
+            )
+            wrappedObject.setAttribute("stamina", 0.0)
+            wrappedObject.staminaCooldown = true
+
+            // Сбрасываем кулдаун через время в конфиге
+            instance.server.scheduler.runTaskLater(instance, Runnable {
+                wrappedObject.staminaCooldown = false
+            }, config.staminaCooldownDuration().toLong())
+            return
+        }
+        wrappedObject.setAttribute(
+            "stamina",
+            String.format(
+                "%.1f", attribute.value-config.staminaPerJump()
+            )
+                .toDouble()
+        )
     }
 
     private fun containsInPairs(pairs : ArrayList<Pair<Material, Int>>, material: Material) : Pair<Material, Int>? {
