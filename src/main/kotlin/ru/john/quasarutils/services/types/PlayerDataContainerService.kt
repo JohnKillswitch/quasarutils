@@ -18,9 +18,22 @@ class PlayerDataContainerService : QuasarService("pdc") {
         dataContainer.add(Pair(player.uniqueId, wrapped))
     }
 
+    fun checkPlayer(player: Player) : Boolean {
+        return (getPlayerWrappedObject(player) != null)
+    }
+
     fun getPlayerWrappedObject(player: Player) : QuasarPlayer? {
         dataContainer.forEach {
             if(it.first == player.uniqueId) {
+                return it.second
+            }
+        }
+        return null
+    }
+
+    fun getPlayerWrappedObject(uniqueId: UUID) : QuasarPlayer? {
+        dataContainer.forEach {
+            if(it.first == uniqueId) {
                 return it.second
             }
         }

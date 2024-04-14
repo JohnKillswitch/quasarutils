@@ -6,7 +6,7 @@ import ru.john.quasarutils.QuasarUtils
 
 class QuasarAttribute(
     private val name: String,
-    val value: Double,
+    var value: Double,
     val key: NamespacedKey,
     val type: PersistentDataType<Double, Double>
 ) {
@@ -16,8 +16,9 @@ class QuasarAttribute(
 
         fun getDefaultAttributes() : ArrayList<QuasarAttribute> {
             val list: ArrayList<QuasarAttribute> = ArrayList()
+            val config = QuasarUtils.playerActionsConfig!!.data()!!
             // Жажда
-            list.add(QuasarAttribute("thirst", 20.0, thirstKey, PersistentDataType.DOUBLE))
+            list.add(QuasarAttribute("thirst", config.thirstMaxValue().toDouble(), thirstKey, PersistentDataType.DOUBLE))
             return list
         }
     }

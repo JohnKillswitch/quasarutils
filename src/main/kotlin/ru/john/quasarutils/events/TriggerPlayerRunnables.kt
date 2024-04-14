@@ -13,7 +13,9 @@ class TriggerPlayerRunnables : Listener {
     @EventHandler
     fun registerPlayer(event: PlayerJoinEvent) {
         var service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
-        service.addPlayer(event.player)
+        if(!service.checkPlayer(event.player)) {
+            service.addPlayer(event.player)
+        }
         PlayerRunnablesService(event.player)
     }
 

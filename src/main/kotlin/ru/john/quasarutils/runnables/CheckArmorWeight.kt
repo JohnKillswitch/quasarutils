@@ -7,11 +7,10 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import ru.john.quasarutils.Configuration
 import ru.john.quasarutils.QuasarUtils
-import ru.john.quasarutils.configs.PlayerTasksConfig
+import ru.john.quasarutils.configs.PlayerActionsConfig
 import ru.john.quasarutils.util.ArmorUtils
 import ru.john.quasarutils.util.PlayerRunnable
 import java.util.Random
-import kotlin.math.abs
 
 /*
 Раннейбл для проверки тяжести брони,
@@ -19,12 +18,13 @@ import kotlin.math.abs
  */
 class CheckArmorWeight(
     private val player: Player,
-) : PlayerRunnable(player, 20L, 0L) {
+) : PlayerRunnable(player, 0L, 20L) {
     override fun run() {
         if(!player.isOnline) cancel()
+        if(player.isDead) return
         if(!ArmorUtils.playerArmorIsHeavy(player)) return
 
-        val config: Configuration<PlayerTasksConfig> = QuasarUtils.playerTasksConfig!!
+        val config: Configuration<PlayerActionsConfig> = QuasarUtils.playerActionsConfig!!
         val location = player.location
         val locUnderPlayer: Location = location.subtract(0.0, 1.0, 0.0)
         val locWorld = location.world

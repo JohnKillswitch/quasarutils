@@ -10,7 +10,7 @@ import ru.john.quasarutils.commands.MainCommand
 import ru.john.quasarutils.commands.SetCharacterInfo
 import ru.john.quasarutils.configs.Config
 import ru.john.quasarutils.configs.Messages
-import ru.john.quasarutils.configs.PlayerTasksConfig
+import ru.john.quasarutils.configs.PlayerActionsConfig
 import ru.john.quasarutils.crafts.ShaplessCrafts
 import ru.john.quasarutils.database.DataSource
 import ru.john.quasarutils.database.CharBase
@@ -25,7 +25,7 @@ class QuasarUtils : JavaPlugin() {
 
     companion object {
         var instance: JavaPlugin? = null
-        var playerTasksConfig: Configuration<PlayerTasksConfig>? = null
+        var playerActionsConfig: Configuration<PlayerActionsConfig>? = null
         var reflections: Reflections = Reflections("ru.john")
         var serviceManager: ServiceLoader? = null
         var cacheMap: CacheMap? = null
@@ -56,27 +56,27 @@ class QuasarUtils : JavaPlugin() {
             ConfigurationOptions.defaults()
         )
 
-        playerTasksConfig = Configuration.create(
+        playerActionsConfig = Configuration.create(
             this,
-            "playerTasksConfig.yml",
-            PlayerTasksConfig::class.java,
+            "playerActionsConfig.yml",
+            PlayerActionsConfig::class.java,
             ConfigurationOptions.defaults()
         )
 
         messages.reloadConfig()
         defaultConfig!!.reloadConfig()
-        playerTasksConfig!!.reloadConfig()
+        playerActionsConfig!!.reloadConfig()
 
 
         val hikariDataSource = DataSource(this).create()
         charBase = CharBase(hikariDataSource)
         charBase!!.createCharacterTable()
         cacheMap = CacheMap(charBase!!)
-        val placeholderExpansion = PlaceholderExpansion(cacheMap!!)
         val landsApi: LandsIntegration = LandsIntegration.of(this)
 
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            PlaceholderExpansion(cacheMap!!).register()
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            this.logger.severe("Плагину требуется наличие PlaceholderAPI!")
+            this.server.pluginManager.disablePlugin(this)
         }
 
 
@@ -84,10 +84,6 @@ class QuasarUtils : JavaPlugin() {
 
         getCommand("char")!!.setExecutor(
             SetCharacterInfo(this, miniMessage, charBase!!, cHelper, cacheMap!!, messages)
-        )
-
-        getCommand("quasarutils")!!.setExecutor(
-            MainCommand(this, placeholderExpansion, cacheMap!!)
         )
 
         val disableRecipes = DisableRecipes()
@@ -102,7 +98,12 @@ class QuasarUtils : JavaPlugin() {
 
         registerSchedulers(defaultConfig!!, this, cacheMap!!, landsApi)
 
+        val placeholderExpansion = PlaceholderExpansion()
+        placeholderExpansion.register()
 
+        getCommand("quasarutils")!!.setExecutor(
+            MainCommand(this, placeholderExpansion, cacheMap!!)
+        )
     }
     private fun registerSchedulers(config: Configuration<Config>, plugin: JavaPlugin, cacheMap: CacheMap, landsApi: LandsIntegration) {
         object : BukkitRunnable() {

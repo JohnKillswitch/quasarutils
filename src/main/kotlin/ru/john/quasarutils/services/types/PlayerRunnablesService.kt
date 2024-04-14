@@ -7,7 +7,6 @@ import ru.john.quasarutils.QuasarUtils.Companion.serviceManager
 import ru.john.quasarutils.services.QuasarService
 import ru.john.quasarutils.services.ServiceType
 import ru.john.quasarutils.util.PlayerRunnable
-import java.util.function.Consumer
 
 /*
 Динамический сервис, необходимый для создания потоков,
