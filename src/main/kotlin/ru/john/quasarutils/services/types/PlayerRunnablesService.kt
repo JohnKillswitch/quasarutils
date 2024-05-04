@@ -27,9 +27,14 @@ class PlayerRunnablesService(player: Player) : QuasarService(
         objects.forEach {
             val runnable: PlayerRunnable
             try {
-                runnable = it.getDeclaredConstructor(Player::class.java).newInstance(player)
-                runnable.runTaskTimer(instance!!, runnable.delay, runnable.period)
-                runnables.add(runnable.taskId)
+                val typeField = it.getDeclaredField("onJoin")
+                typeField.isAccessible = true
+
+                if(typeField.get(it) as Boolean) {
+                    runnable = it.getDeclaredConstructor(Player::class.java).newInstance(player)
+                    runnable.runTaskTimer(instance!!, runnable.delay, runnable.period)
+                    runnables.add(runnable.taskId)
+                }
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }

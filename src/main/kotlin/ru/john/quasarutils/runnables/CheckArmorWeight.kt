@@ -51,4 +51,8 @@ class CheckArmorWeight(
         }
     }
 
+    companion object {
+        val onJoin: Boolean = true
+    }
+
 }

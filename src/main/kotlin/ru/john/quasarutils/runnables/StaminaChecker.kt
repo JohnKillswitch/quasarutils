@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import ru.john.quasarutils.QuasarUtils
+import ru.john.quasarutils.attributes.Attribute
 import ru.john.quasarutils.util.PlayerRunnable
 import kotlin.math.roundToInt
 
@@ -17,15 +18,15 @@ class StaminaChecker(
         if(player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
         val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
-        val wrappedObject = service.getPlayerWrappedObject(player)!!
-        if(wrappedObject.staminaCooldown) return
+        val qPlayer = service.getPlayer(player)!!
+        if(qPlayer.staminaCooldown) return
 
-        val attribute = wrappedObject.getAttribute("stamina")!!
+        val attribute = qPlayer.getAttribute(Attribute.STAMINA)!!
         val config = QuasarUtils.playerActionsConfig!!.data()!!
 
         if(player.isSprinting) {
 
-            if(attribute.value-config.staminaPerRun() <= 0) {
+            if((attribute.value as Double)-config.staminaPerRun() <= 0) {
                 val instance = QuasarUtils.instance!!
 
                 player.addPotionEffect(
@@ -38,35 +39,40 @@ class StaminaChecker(
                         false
                     )
                 )
-                wrappedObject.setAttribute("stamina", 0.0)
-                wrappedObject.staminaCooldown = true
+
+                qPlayer.setAttribute(Attribute.STAMINA, 0.0)
+                qPlayer.staminaCooldown = true
 
                 // Сбрасываем кулдаун через время в конфиге
                 instance.server.scheduler.runTaskLater(instance, Runnable {
-                    wrappedObject.staminaCooldown = false
+                    qPlayer.staminaCooldown = false
                 }, config.staminaCooldownDuration().toLong())
                 return
             }
 
             val minusStamina = String.format(
-                "%.1f", attribute.value-config.staminaPerRun()
+                "%.1f", (attribute.value)-config.staminaPerRun()
             ).toDouble()
-            wrappedObject.setAttribute(
-                "stamina",
+            qPlayer.setAttribute(
+                Attribute.STAMINA,
                 minusStamina
             )
             return
         }
 
         val plusStamina = String.format(
-            "%.1f", attribute.value+config.staminaHeal()
+            "%.1f", (attribute.value)+config.staminaHeal()
         ).toDouble()
 
         if(plusStamina >= config.maxStaminaValue()) {
-            wrappedObject.setAttribute("stamina", config.maxStaminaValue().toDouble())
+            qPlayer.setAttribute(Attribute.STAMINA, config.maxStaminaValue().toDouble())
             return
         }
-        wrappedObject.setAttribute("stamina", plusStamina)
+        qPlayer.setAttribute(Attribute.STAMINA, plusStamina)
+    }
+
+    companion object {
+        val onJoin: Boolean = true
     }
 
 }

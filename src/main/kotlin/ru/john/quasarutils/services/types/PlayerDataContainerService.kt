@@ -3,7 +3,7 @@ package ru.john.quasarutils.services.types
 import org.bukkit.entity.Player
 import ru.john.quasarutils.services.QuasarService
 import ru.john.quasarutils.services.ServiceType
-import ru.john.quasarutils.util.QuasarPlayer
+import ru.john.quasarutils.util.QPlayer
 import java.util.UUID
 
 /*
@@ -11,33 +11,33 @@ import java.util.UUID
 соответственно.
  */
 class PlayerDataContainerService : QuasarService("pdc") {
-    private val dataContainer: ArrayList<Pair<UUID, QuasarPlayer>> = ArrayList()
+    private val dataContainer: ArrayList<Pair<UUID, QPlayer>> = ArrayList()
 
     fun addPlayer(player: Player) {
-        val wrapped = QuasarPlayer.format(player)
-        dataContainer.add(Pair(player.uniqueId, wrapped))
+        val qInstance = QPlayer(player)
+        dataContainer.add(Pair(player.uniqueId, qInstance))
+    }
+
+    fun getPlayer(player: Player) : QPlayer? {
+        var findVal: Pair<UUID, QPlayer>? = null
+        dataContainer.forEach{element ->
+            if(element.first == player.uniqueId) findVal = element
+        }
+        if(findVal == null) return null
+        return findVal!!.second
     }
 
     fun checkPlayer(player: Player) : Boolean {
-        return (getPlayerWrappedObject(player) != null)
+        return getPlayer(player) != null
     }
 
-    fun getPlayerWrappedObject(player: Player) : QuasarPlayer? {
-        dataContainer.forEach {
-            if(it.first == player.uniqueId) {
-                return it.second
-            }
+    fun removePlayer(player: Player) {
+        var findVal: Pair<UUID, QPlayer>? = null
+        dataContainer.forEach{element ->
+            if(element.first == player.uniqueId) findVal = element
         }
-        return null
-    }
-
-    fun getPlayerWrappedObject(uniqueId: UUID) : QuasarPlayer? {
-        dataContainer.forEach {
-            if(it.first == uniqueId) {
-                return it.second
-            }
-        }
-        return null
+        if(findVal == null) return
+        dataContainer.remove(findVal!!)
     }
 
     companion object {

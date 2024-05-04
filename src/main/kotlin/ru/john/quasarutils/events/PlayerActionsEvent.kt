@@ -1,11 +1,14 @@
 package ru.john.quasarutils.events
 
-import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -13,6 +16,8 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import ru.john.quasarutils.QuasarUtils
+import ru.john.quasarutils.attributes.Attribute
+import ru.john.quasarutils.util.QPlayer
 
 class PlayerActionsEvent : Listener {
 
@@ -36,19 +41,20 @@ class PlayerActionsEvent : Listener {
         if(!flag) return
 
         val instance = QuasarUtils.instance!!
-        val wrappedObject = QuasarUtils.serviceManager!!
-            .getPlayerDataContainerService().getPlayerWrappedObject(event.player)!!
-        // Проверка на кулдаун
-        if(wrappedObject.drinkCooldown) return
+        val qPlayer: QPlayer = QuasarUtils.serviceManager!!.getPlayerDataContainerService().getPlayer(event.player)!!
 
-        val currThirst = wrappedObject.getAttribute("thirst")!!
+        // Проверка на кулдаун
+        if(qPlayer.drinkCooldown) return
+
+        val currThirst = qPlayer.getAttribute(Attribute.THIRST)!!
         var value = config.thirstMaxValue().toDouble()
         // Лимит на максимальное количество жажды
         if(currThirst.value+config.blockThirstAdding() < value) {
             value = (currThirst.value + config.blockThirstAdding())
         }
-        wrappedObject.setAttribute("thirst", value)
-        wrappedObject.drinkCooldown = true
+
+        qPlayer.setAttribute(Attribute.THIRST, value)
+        qPlayer.drinkCooldown = true
 
         var loc = event.player.location
         loc = loc.add(0.0, 1.0, 0.0)
@@ -56,8 +62,17 @@ class PlayerActionsEvent : Listener {
 
         // Сбрасываем кулдаун через время в конфиге
         instance.server.scheduler.runTaskLater(instance, Runnable {
-            wrappedObject.drinkCooldown = false
+            qPlayer.drinkCooldown = false
         }, config.handDrinkWaterCooldown().toLong())
+    }
+
+    @EventHandler
+    fun healStats(event: PlayerDeathEvent) {
+        val qPlayer: QPlayer = QuasarUtils.serviceManager!!.getPlayerDataContainerService().getPlayer(event.player)!!
+        val config = QuasarUtils.playerActionsConfig!!.data()!!
+
+        qPlayer.setAttribute(Attribute.THIRST, config.thirstMaxValue().toDouble())
+        qPlayer.setAttribute(Attribute.STAMINA, config.maxStaminaValue().toDouble())
     }
 
     @EventHandler
@@ -73,27 +88,47 @@ class PlayerActionsEvent : Listener {
 
         val pair = containsInPairs(materials, event.item.type) ?: return
 
-        val wrappedObject = QuasarUtils.serviceManager!!
-                .getPlayerDataContainerService().getPlayerWrappedObject(event.player)!!
+        val qPlayer: QPlayer = QuasarUtils.serviceManager!!.getPlayerDataContainerService().getPlayer(event.player)!!
 
-        val currThirst = wrappedObject.getAttribute("thirst")!!
+        val currThirst = qPlayer.getAttribute(Attribute.THIRST)!!
         var value = config.thirstMaxValue().toDouble()
         // Лимит на максимальное количество жажды
         if(currThirst.value+pair.second < value) {
             value = (currThirst.value + pair.second)
         }
 
-        wrappedObject.setAttribute("thirst", value)
+        qPlayer.setAttribute(Attribute.THIRST, value)
     }
 
     @EventHandler
-    fun removeStamina(event: PlayerJumpEvent) {
+    fun detectDamage(event: EntityDamageByEntityEvent) {
+        if(event.entity !is Player) return
+
         val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
-        val wrappedObject = service.getPlayerWrappedObject(event.player)!!
-        val attribute = wrappedObject.getAttribute("stamina")!!
+        val qPlayer = service.getPlayer(event.entity as Player)
+        qPlayer!!.playerDamaged = true
+        val instance = QuasarUtils.instance!!
+        instance.server.scheduler.runTaskLater(instance, Runnable {
+            qPlayer.playerDamaged = false
+        }, 10L)
+    }
+
+    @EventHandler
+    fun removeStamina(event: PlayerMoveEvent) {
+        if((event.to.y <= event.from.y) || (event.to.y - 0.5 == event.from.y)) return
+
+        if(event.player.gameMode == GameMode.CREATIVE || event.player.gameMode == GameMode.SPECTATOR) return
+        val block = event.player.location.block.type
+
+        val service = QuasarUtils.serviceManager!!.getPlayerDataContainerService()
+        val qPlayer = service.getPlayer(event.player)!!
+
+        val attribute = qPlayer.getAttribute(Attribute.STAMINA)!!
         val config = QuasarUtils.playerActionsConfig!!.data()!!
 
-        if(wrappedObject.staminaCooldown) event.isCancelled = true
+        if(event.player.isClimbing || event.player.isInWater || qPlayer.playerDamaged) return
+
+        if(qPlayer.staminaCooldown) event.isCancelled = true
 
         if(attribute.value-config.staminaPerJump() <= 0) {
             val instance = QuasarUtils.instance!!
@@ -108,17 +143,17 @@ class PlayerActionsEvent : Listener {
                     false
                 )
             )
-            wrappedObject.setAttribute("stamina", 0.0)
-            wrappedObject.staminaCooldown = true
+            qPlayer.setAttribute(Attribute.STAMINA, 0.0)
+            qPlayer.staminaCooldown = true
 
             // Сбрасываем кулдаун через время в конфиге
             instance.server.scheduler.runTaskLater(instance, Runnable {
-                wrappedObject.staminaCooldown = false
+                qPlayer.staminaCooldown = false
             }, config.staminaCooldownDuration().toLong())
             return
         }
-        wrappedObject.setAttribute(
-            "stamina",
+        qPlayer.setAttribute(
+            Attribute.STAMINA,
             String.format(
                 "%.1f", attribute.value-config.staminaPerJump()
             )
